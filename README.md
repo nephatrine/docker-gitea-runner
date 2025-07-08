@@ -20,7 +20,7 @@ container. Only allow trusted users and organizations access to your runner.**
 
 ## Supported Tags
 
-- `gitea-runner:0.2.11`: act_runner 0.2.11
+- `gitea-runner:0.2.12`: act_runner 0.2.12
 
 ## Software
 

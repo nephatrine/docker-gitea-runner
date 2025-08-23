@@ -71,7 +71,7 @@ jobs:
         uses: https://code.nephatrine.net/NephHub/actions-status-discord@v1
         if: failure()
         with:
-          title: "FAIL: build_images (${{matrix.platform}})"
+          title: "FAIL: build_images (0.2.12; ${{matrix.platform}})"
           webhook: ${{ secrets.DISCORD_WH_CONTAINERS }}
   push_images:
     needs: [build_images]
@@ -126,7 +126,7 @@ jobs:
         uses: https://code.nephatrine.net/NephHub/actions-status-discord@v1
         if: failure()
         with:
-          title: "FAIL: push_images (${{matrix.platform}})"
+          title: "FAIL: push_images (0.2.12; ${{matrix.platform}})"
           webhook: ${{ secrets.DISCORD_WH_CONTAINERS }}
   build_manifest:
     needs: [build_images]
@@ -169,7 +169,7 @@ jobs:
         uses: https://code.nephatrine.net/NephHub/actions-status-discord@v1
         if: failure()
         with:
-          title: "FAIL: build_manifest"
+          title: "FAIL: build_manifest (0.2.12)"
           webhook: ${{ secrets.DISCORD_WH_CONTAINERS }}
   push_manifest:
     needs: [push_images]
@@ -210,7 +210,7 @@ jobs:
         uses: https://code.nephatrine.net/NephHub/actions-status-discord@v1
         if: failure()
         with:
-          title: "FAIL: push_manifest"
+          title: "FAIL: push_manifest (0.2.12)"
           webhook: ${{ secrets.DISCORD_WH_CONTAINERS }}
   update_readme:
     needs: [push_manifest]

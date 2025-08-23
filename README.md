@@ -21,6 +21,7 @@ container. Only allow trusted users and organizations access to your runner.**
 ## Supported Tags
 
 - `gitea-runner:0.2.12`: act_runner 0.2.12
+- `gitea-runner:liteyuki`: liteyuki-runner
 
 ## Software
 
@@ -28,6 +29,7 @@ container. Only allow trusted users and organizations access to your runner.**
 - [Skarnet S6](https://skarnet.org/software/s6/)
 - [s6-overlay](https://github.com/just-containers/s6-overlay)
 - [act_runner](https://gitea.com/gitea/act_runner)
+- [liteyuki-runner](https://github.com/snowykami/liteyuki-runner)
 
 ## Configuration
 

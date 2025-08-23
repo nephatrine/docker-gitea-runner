@@ -1,0 +1,228 @@
+# SPDX-FileCopyrightText: 2023-2025 Daniel Wolf <nephatrine@gmail.com>
+# SPDX-License-Identifier: ISC
+
+name: Build Container Image
+run-name: ${{ gitea.actor }} pushed to ${{ gitea.repository }}:${{ gitea.ref_name }}
+on:
+  push:
+    branches:
+      - "master"
+  schedule:
+    - cron: "TZ=America/New_York 0 9 * * 7"
+jobs:
+  build_images:
+    if: gitea.repository_owner == 'NephNET' && (!(startsWith(gitea.event.head_commit.message, 'chore') || startsWith(gitea.event.head_commit.message, 'docs') || startsWith(gitea.event.head_commit.message, 'style')) || gitea.event_name == 'schedule')
+    strategy:
+      matrix:
+        include:
+          - runner: amd64
+            platform: amd64
+            nephhub: amd64
+          - runner: arm64
+            platform: arm64/v8
+            nephhub: arm64
+          - runner: armhf
+            platform: arm/v7
+            nephhub: arm32
+          - runner: i386
+            platform: 386
+            nephhub: ia32
+          - runner: riscv64
+            platform: riscv64
+            nephhub: riscv64
+    runs-on: nephnet-${{matrix.runner}}
+    continue-on-error: true
+    steps:
+      - name: Checkout Repository
+        uses: https://code.nephatrine.net/NephHub/checkout@v4
+      - name: BuildX Setup
+        uses: https://code.nephatrine.net/NephHub/setup-buildx-action@v3
+      - name: NephCode Login (Push)
+        continue-on-error: true
+        id: nclogin
+        uses: https://code.nephatrine.net/NephHub/login-action@v3
+        with:
+          registry: code.nephatrine.net
+          username: ${{ gitea.actor }}
+          password: ${{ secrets.PACKAGER_TOKEN }}
+      - name: Wait to Retry
+        if: steps.nclogin.outcome != 'success'
+        run: sleep 60
+      - name: Retry NephCode Login (Push)
+        if: steps.nclogin.outcome != 'success'
+        uses: https://code.nephatrine.net/NephHub/login-action@v3
+        with:
+          registry: code.nephatrine.net
+          username: ${{ gitea.actor }}
+          password: ${{ secrets.PACKAGER_TOKEN }}
+      - name: Build & Push
+        uses: https://code.nephatrine.net/NephHub/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/${{matrix.platform}}
+          provenance: false
+          pull: true
+          push: true
+          file: Dockerfile.liteyuki
+          tags: code.nephatrine.net/nephnet/liteyuki-runner:liteyuki-${{matrix.nephhub}}
+          cache-from: type=registry,ref=code.nephatrine.net/nephhub/${{matrix.nephhub}}-cache:liteyuki-runner
+          cache-to: type=registry,image-manifest=true,oci-mediatypes=true,ref=code.nephatrine.net/nephhub/${{matrix.nephhub}}-cache:liteyuki-runner,mode=max
+      - name: Notify Discord
+        uses: https://code.nephatrine.net/NephHub/actions-status-discord@v1
+        if: failure()
+        with:
+          title: "FAIL: build_images (${{matrix.platform}})"
+          webhook: ${{ secrets.DISCORD_WH_CONTAINERS }}
+  push_images:
+    needs: [build_images]
+    strategy:
+      matrix:
+        include:
+          - platform: amd64
+            nephhub: amd64
+            dockerhub: amd64
+          - platform: arm64/v8
+            nephhub: arm64
+            dockerhub: arm64
+          - platform: arm/v7
+            nephhub: arm32
+            dockerhub: armv7
+          - platform: 386
+            nephhub: ia32
+            dockerhub: ia32
+          - platform: riscv64
+            nephhub: riscv64
+            dockerhub: riscv64
+    runs-on: nephnet-fast
+    continue-on-error: true
+    steps:
+      - name: DockerHub Login (Push)
+        continue-on-error: true
+        id: dhlogin
+        uses: https://code.nephatrine.net/NephHub/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
+      - name: Wait to Retry
+        if: steps.dhlogin.outcome != 'success'
+        run: sleep 60
+      - name: Retry DockerHub Login (Push)
+        if: steps.dhlogin.outcome != 'success'
+        uses: https://code.nephatrine.net/NephHub/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
+      - name: Tag & Push
+        run: |
+          docker pull code.nephatrine.net/nephnet/liteyuki-runner:liteyuki-${{matrix.nephhub}} --platform linux/${{matrix.platform}}
+          docker tag code.nephatrine.net/nephnet/liteyuki-runner:liteyuki-${{matrix.nephhub}} nephatrine/${{matrix.dockerhub}}:liteyuki-runner
+          docker rmi code.nephatrine.net/nephnet/liteyuki-runner:liteyuki-${{matrix.nephhub}}
+          docker push nephatrine/${{matrix.dockerhub}}:liteyuki-runner
+          docker rmi nephatrine/${{matrix.dockerhub}}:liteyuki-runner
+      - name: Clean Up
+        if: failure()
+        run: docker rmi nephatrine/${{matrix.dockerhub}}:liteyuki-runner
+      - name: Notify Discord
+        uses: https://code.nephatrine.net/NephHub/actions-status-discord@v1
+        if: failure()
+        with:
+          title: "FAIL: push_images (${{matrix.platform}})"
+          webhook: ${{ secrets.DISCORD_WH_CONTAINERS }}
+  build_manifest:
+    needs: [build_images]
+    runs-on: nephnet-fast
+    continue-on-error: true
+    steps:
+      - name: NephCode Login (Push)
+        continue-on-error: true
+        id: nclogin
+        uses: https://code.nephatrine.net/NephHub/login-action@v3
+        with:
+          registry: code.nephatrine.net
+          username: ${{ gitea.actor }}
+          password: ${{ secrets.PACKAGER_TOKEN }}
+      - name: Wait to Retry
+        if: steps.nclogin.outcome != 'success'
+        run: sleep 60
+      - name: Retry NephCode Login (Push)
+        if: steps.nclogin.outcome != 'success'
+        uses: https://code.nephatrine.net/NephHub/login-action@v3
+        with:
+          registry: code.nephatrine.net
+          username: ${{ gitea.actor }}
+          password: ${{ secrets.PACKAGER_TOKEN }}
+      - name: Docker Manifest
+        continue-on-error: true
+        id: manifest
+        run: |
+          export IMAGELIST="--amend code.nephatrine.net/nephnet/liteyuki-runner:liteyuki-amd64 --amend code.nephatrine.net/nephnet/liteyuki-runner:liteyuki-ia32 --amend code.nephatrine.net/nephnet/liteyuki-runner:liteyuki-arm64 --amend code.nephatrine.net/nephnet/liteyuki-runner:liteyuki-arm32 --amend code.nephatrine.net/nephnet/liteyuki-runner:liteyuki-riscv64"
+          for manifestName in liteyuki; do docker manifest rm code.nephatrine.net/nephnet/liteyuki-runner:${manifestName} || true; docker manifest create code.nephatrine.net/nephnet/liteyuki-runner:${manifestName} ${IMAGELIST}; docker manifest push --purge code.nephatrine.net/nephnet/liteyuki-runner:${manifestName}; done
+      - name: Wait to Retry
+        if: steps.manifest.outcome != 'success'
+        run: sleep 60
+      - name: Retry Docker Manifest
+        if: steps.manifest.outcome != 'success'
+        run: |
+          export IMAGELIST="--amend code.nephatrine.net/nephnet/liteyuki-runner:liteyuki-amd64 --amend code.nephatrine.net/nephnet/liteyuki-runner:liteyuki-ia32 --amend code.nephatrine.net/nephnet/liteyuki-runner:liteyuki-arm64 --amend code.nephatrine.net/nephnet/liteyuki-runner:liteyuki-arm32 --amend code.nephatrine.net/nephnet/liteyuki-runner:liteyuki-riscv64"
+          for manifestName in liteyuki; do docker manifest rm code.nephatrine.net/nephnet/liteyuki-runner:${manifestName} || true; docker manifest create code.nephatrine.net/nephnet/liteyuki-runner:${manifestName} ${IMAGELIST}; docker manifest push --purge code.nephatrine.net/nephnet/liteyuki-runner:${manifestName}; done
+      - name: Notify Discord
+        uses: https://code.nephatrine.net/NephHub/actions-status-discord@v1
+        if: failure()
+        with:
+          title: "FAIL: build_manifest"
+          webhook: ${{ secrets.DISCORD_WH_CONTAINERS }}
+  push_manifest:
+    needs: [push_images]
+    runs-on: nephnet-fast
+    continue-on-error: true
+    steps:
+      - name: DockerHub Login (Push)
+        continue-on-error: true
+        id: dhlogin
+        uses: https://code.nephatrine.net/NephHub/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
+      - name: Wait to Retry
+        if: steps.dhlogin.outcome != 'success'
+        run: sleep 60
+      - name: Retry DockerHub Login (Push)
+        if: steps.dhlogin.outcome != 'success'
+        uses: https://code.nephatrine.net/NephHub/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
+      - name: Docker Manifest
+        continue-on-error: true
+        id: manifest
+        run: |
+          export IMAGELIST="--amend nephatrine/amd64:liteyuki-runner --amend nephatrine/ia32:liteyuki-runner --amend nephatrine/arm64:liteyuki-runner --amend nephatrine/armv7:liteyuki-runner --amend nephatrine/riscv64:liteyuki-runner"
+          for manifestName in liteyuki; do docker manifest rm nephatrine/liteyuki-runner:${manifestName} || true; docker manifest create nephatrine/liteyuki-runner:${manifestName} ${IMAGELIST}; docker manifest push --purge nephatrine/liteyuki-runner:${manifestName}; done
+      - name: Wait to Retry
+        if: steps.manifest.outcome != 'success'
+        run: sleep 60
+      - name: Retry Docker Manifest
+        if: steps.manifest.outcome != 'success'
+        run: |
+          export IMAGELIST="--amend nephatrine/amd64:liteyuki-runner --amend nephatrine/ia32:liteyuki-runner --amend nephatrine/arm64:liteyuki-runner --amend nephatrine/armv7:liteyuki-runner --amend nephatrine/riscv64:liteyuki-runner"
+          for manifestName in liteyuki; do docker manifest rm nephatrine/liteyuki-runner:${manifestName} || true; docker manifest create nephatrine/liteyuki-runner:${manifestName} ${IMAGELIST}; docker manifest push --purge nephatrine/liteyuki-runner:${manifestName}; done
+      - name: Notify Discord
+        uses: https://code.nephatrine.net/NephHub/actions-status-discord@v1
+        if: failure()
+        with:
+          title: "FAIL: push_manifest"
+          webhook: ${{ secrets.DISCORD_WH_CONTAINERS }}
+  update_readme:
+    needs: [push_manifest]
+    runs-on: nephnet-fast
+    continue-on-error: true
+    steps:
+      - name: Checkout Repository
+        uses: https://code.nephatrine.net/NephHub/checkout@v4
+      - name: Docker Describe
+        continue-on-error: true
+        uses: https://github.com/peter-evans/dockerhub-description@v3
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASS }}
+          repository: nephatrine/liteyuki-runner

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2023-2025 Daniel Wolf <nephatrine@gmail.com>
+# SPDX-FileCopyrightText: 2023-2026 Daniel Wolf <nephatrine@gmail.com>
 # SPDX-License-Identifier: ISC
 
 # hadolint global ignore=DL3018
@@ -6,8 +6,8 @@
 # hadolint ignore=DL3007
 FROM code.nephatrine.net/nephnet/nxb-golang:latest AS builder
 
-RUN git -C /root clone --single-branch --depth=1 https://github.com/snowykami/liteyuki-runner.git
-WORKDIR /root/liteyuki-runner
+RUN git -C /root clone --branch liteyuki --single-branch --depth=1 https://code.nephatrine.net/nephatrine/nephnet-runner.git
+WORKDIR /root/nephnet-runner
 
 ARG TAGS="sqlite sqlite_unlock_notify cgo"
 RUN make -j$(( $(getconf _NPROCESSORS_ONLN) / 2 + 1 )) build
@@ -18,5 +18,5 @@ LABEL maintainer="Daniel Wolf <nephatrine@gmail.com>"
 
 RUN apk add --no-cache docker git git-lfs jq npm && rm -rf /tmp/* /var/tmp/*
 
-COPY --from=builder /root/liteyuki-runner/act_runner /usr/bin/
+COPY --from=builder /root/nephnet-runner/act_runner /usr/bin/
 COPY override /

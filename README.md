@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: 2023-2025 Daniel Wolf <nephatrine@gmail.com>
+SPDX-FileCopyrightText: 2023-2026 Daniel Wolf <nephatrine@gmail.com>
 SPDX-License-Identifier: ISC
 -->
 
@@ -21,7 +21,7 @@ container. Only allow trusted users and organizations access to your runner.**
 ## Supported Tags
 
 - `gitea-runner:0.2.13`: act_runner 0.2.13
-- `gitea-runner:liteyuki`: liteyuki-runner
+- `gitea-runner:liteyuki`: act_runner 0.2.13 w/ allowed_repos config
 
 ## Software
 
@@ -29,7 +29,6 @@ container. Only allow trusted users and organizations access to your runner.**
 - [Skarnet S6](https://skarnet.org/software/s6/)
 - [s6-overlay](https://github.com/just-containers/s6-overlay)
 - [act_runner](https://gitea.com/gitea/act_runner)
-- [liteyuki-runner](https://github.com/snowykami/liteyuki-runner)
 
 ## Configuration
 

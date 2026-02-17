@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2023-2025 Daniel Wolf <nephatrine@gmail.com>
+# SPDX-FileCopyrightText: 2023-2026 Daniel Wolf <nephatrine@gmail.com>
 # SPDX-License-Identifier: ISC
 
 name: Build Container Image
@@ -156,7 +156,7 @@ jobs:
         id: manifest
         run: |
           export IMAGELIST="--amend code.nephatrine.net/nephnet/gitea-runner:liteyuki-amd64 --amend code.nephatrine.net/nephnet/gitea-runner:liteyuki-ia32 --amend code.nephatrine.net/nephnet/gitea-runner:liteyuki-arm64 --amend code.nephatrine.net/nephnet/gitea-runner:liteyuki-arm32 --amend code.nephatrine.net/nephnet/gitea-runner:liteyuki-riscv64"
-          for manifestName in liteyuki; do docker manifest rm code.nephatrine.net/nephnet/gitea-runner:${manifestName} || true; docker manifest create code.nephatrine.net/nephnet/gitea-runner:${manifestName} ${IMAGELIST}; docker manifest push --purge code.nephatrine.net/nephnet/gitea-runner:${manifestName}; done
+          for manifestName in 0.2.13-liteyuki liteyuki; do docker manifest rm code.nephatrine.net/nephnet/gitea-runner:${manifestName} || true; docker manifest create code.nephatrine.net/nephnet/gitea-runner:${manifestName} ${IMAGELIST}; docker manifest push --purge code.nephatrine.net/nephnet/gitea-runner:${manifestName}; done
       - name: Wait to Retry
         if: steps.manifest.outcome != 'success'
         run: sleep 60
@@ -164,7 +164,7 @@ jobs:
         if: steps.manifest.outcome != 'success'
         run: |
           export IMAGELIST="--amend code.nephatrine.net/nephnet/gitea-runner:liteyuki-amd64 --amend code.nephatrine.net/nephnet/gitea-runner:liteyuki-ia32 --amend code.nephatrine.net/nephnet/gitea-runner:liteyuki-arm64 --amend code.nephatrine.net/nephnet/gitea-runner:liteyuki-arm32 --amend code.nephatrine.net/nephnet/gitea-runner:liteyuki-riscv64"
-          for manifestName in liteyuki; do docker manifest rm code.nephatrine.net/nephnet/gitea-runner:${manifestName} || true; docker manifest create code.nephatrine.net/nephnet/gitea-runner:${manifestName} ${IMAGELIST}; docker manifest push --purge code.nephatrine.net/nephnet/gitea-runner:${manifestName}; done
+          for manifestName in 0.2.13-liteyuki liteyuki; do docker manifest rm code.nephatrine.net/nephnet/gitea-runner:${manifestName} || true; docker manifest create code.nephatrine.net/nephnet/gitea-runner:${manifestName} ${IMAGELIST}; docker manifest push --purge code.nephatrine.net/nephnet/gitea-runner:${manifestName}; done
       - name: Notify Discord
         uses: https://code.nephatrine.net/NephHub/actions-status-discord@v1
         if: failure()
@@ -197,7 +197,7 @@ jobs:
         id: manifest
         run: |
           export IMAGELIST="--amend nephatrine/amd64:liteyuki-runner --amend nephatrine/ia32:liteyuki-runner --amend nephatrine/arm64:liteyuki-runner --amend nephatrine/armv7:liteyuki-runner --amend nephatrine/riscv64:liteyuki-runner"
-          for manifestName in liteyuki; do docker manifest rm nephatrine/gitea-runner:${manifestName} || true; docker manifest create nephatrine/gitea-runner:${manifestName} ${IMAGELIST}; docker manifest push --purge nephatrine/gitea-runner:${manifestName}; done
+          for manifestName in 0.2.13-liteyuki liteyuki; do docker manifest rm nephatrine/gitea-runner:${manifestName} || true; docker manifest create nephatrine/gitea-runner:${manifestName} ${IMAGELIST}; docker manifest push --purge nephatrine/gitea-runner:${manifestName}; done
       - name: Wait to Retry
         if: steps.manifest.outcome != 'success'
         run: sleep 60
@@ -205,7 +205,7 @@ jobs:
         if: steps.manifest.outcome != 'success'
         run: |
           export IMAGELIST="--amend nephatrine/amd64:liteyuki-runner --amend nephatrine/ia32:liteyuki-runner --amend nephatrine/arm64:liteyuki-runner --amend nephatrine/armv7:liteyuki-runner --amend nephatrine/riscv64:liteyuki-runner"
-          for manifestName in liteyuki; do docker manifest rm nephatrine/gitea-runner:${manifestName} || true; docker manifest create nephatrine/gitea-runner:${manifestName} ${IMAGELIST}; docker manifest push --purge nephatrine/gitea-runner:${manifestName}; done
+          for manifestName in 0.2.13-liteyuki liteyuki; do docker manifest rm nephatrine/gitea-runner:${manifestName} || true; docker manifest create nephatrine/gitea-runner:${manifestName} ${IMAGELIST}; docker manifest push --purge nephatrine/gitea-runner:${manifestName}; done
       - name: Notify Discord
         uses: https://code.nephatrine.net/NephHub/actions-status-discord@v1
         if: failure()

@@ -40,7 +40,7 @@ jobs:
       - name: NephCode Login (Push)
         continue-on-error: true
         id: nclogin
-        uses: https://code.nephatrine.net/NephHub/login-action@v3
+        uses: https://code.nephatrine.net/NephHub/login-action@v3.6.0
         with:
           registry: code.nephatrine.net
           username: ${{ gitea.actor }}
@@ -50,7 +50,7 @@ jobs:
         run: sleep 60
       - name: Retry NephCode Login (Push)
         if: steps.nclogin.outcome != 'success'
-        uses: https://code.nephatrine.net/NephHub/login-action@v3
+        uses: https://code.nephatrine.net/NephHub/login-action@v3.6.0
         with:
           registry: code.nephatrine.net
           username: ${{ gitea.actor }}
@@ -64,7 +64,7 @@ jobs:
           pull: true
           push: true
           file: Dockerfile.liteyuki
-          tags: code.nephatrine.net/nephnet/gitea-runner:liteyuki-${{matrix.nephhub}}
+          tags: code.nephatrine.net/nephnet/gitea-runner:0.2.13-liteyuki-${{matrix.nephhub}}
           cache-from: type=registry,ref=code.nephatrine.net/nephhub/${{matrix.nephhub}}-cache:liteyuki-runner
           cache-to: type=registry,image-manifest=true,oci-mediatypes=true,ref=code.nephatrine.net/nephhub/${{matrix.nephhub}}-cache:liteyuki-runner,mode=max
       - name: Notify Discord
@@ -99,7 +99,7 @@ jobs:
       - name: DockerHub Login (Push)
         continue-on-error: true
         id: dhlogin
-        uses: https://code.nephatrine.net/NephHub/login-action@v3
+        uses: https://code.nephatrine.net/NephHub/login-action@v3.6.0
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}
@@ -108,15 +108,15 @@ jobs:
         run: sleep 60
       - name: Retry DockerHub Login (Push)
         if: steps.dhlogin.outcome != 'success'
-        uses: https://code.nephatrine.net/NephHub/login-action@v3
+        uses: https://code.nephatrine.net/NephHub/login-action@v3.6.0
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}
       - name: Tag & Push
         run: |
-          docker pull code.nephatrine.net/nephnet/gitea-runner:liteyuki-${{matrix.nephhub}} --platform linux/${{matrix.platform}}
-          docker tag code.nephatrine.net/nephnet/gitea-runner:liteyuki-${{matrix.nephhub}} nephatrine/${{matrix.dockerhub}}:liteyuki-runner
-          docker rmi code.nephatrine.net/nephnet/gitea-runner:liteyuki-${{matrix.nephhub}}
+          docker pull code.nephatrine.net/nephnet/gitea-runner:0.2.13-liteyuki-${{matrix.nephhub}} --platform linux/${{matrix.platform}}
+          docker tag code.nephatrine.net/nephnet/gitea-runner:0.2.13-liteyuki-${{matrix.nephhub}} nephatrine/${{matrix.dockerhub}}:liteyuki-runner
+          docker rmi code.nephatrine.net/nephnet/gitea-runner:0.2.13-liteyuki-${{matrix.nephhub}}
           docker push nephatrine/${{matrix.dockerhub}}:liteyuki-runner
           docker rmi nephatrine/${{matrix.dockerhub}}:liteyuki-runner
       - name: Clean Up
@@ -136,7 +136,7 @@ jobs:
       - name: NephCode Login (Push)
         continue-on-error: true
         id: nclogin
-        uses: https://code.nephatrine.net/NephHub/login-action@v3
+        uses: https://code.nephatrine.net/NephHub/login-action@v3.6.0
         with:
           registry: code.nephatrine.net
           username: ${{ gitea.actor }}
@@ -146,7 +146,7 @@ jobs:
         run: sleep 60
       - name: Retry NephCode Login (Push)
         if: steps.nclogin.outcome != 'success'
-        uses: https://code.nephatrine.net/NephHub/login-action@v3
+        uses: https://code.nephatrine.net/NephHub/login-action@v3.6.0
         with:
           registry: code.nephatrine.net
           username: ${{ gitea.actor }}
@@ -155,7 +155,7 @@ jobs:
         continue-on-error: true
         id: manifest
         run: |
-          export IMAGELIST="--amend code.nephatrine.net/nephnet/gitea-runner:liteyuki-amd64 --amend code.nephatrine.net/nephnet/gitea-runner:liteyuki-ia32 --amend code.nephatrine.net/nephnet/gitea-runner:liteyuki-arm64 --amend code.nephatrine.net/nephnet/gitea-runner:liteyuki-arm32 --amend code.nephatrine.net/nephnet/gitea-runner:liteyuki-riscv64"
+          export IMAGELIST="--amend code.nephatrine.net/nephnet/gitea-runner:0.2.13-liteyuki-amd64 --amend code.nephatrine.net/nephnet/gitea-runner:0.2.13-liteyuki-ia32 --amend code.nephatrine.net/nephnet/gitea-runner:0.2.13-liteyuki-arm64 --amend code.nephatrine.net/nephnet/gitea-runner:0.2.13-liteyuki-arm32 --amend code.nephatrine.net/nephnet/gitea-runner:0.2.13-liteyuki-riscv64"
           for manifestName in 0.2.13-liteyuki liteyuki; do docker manifest rm code.nephatrine.net/nephnet/gitea-runner:${manifestName} || true; docker manifest create code.nephatrine.net/nephnet/gitea-runner:${manifestName} ${IMAGELIST}; docker manifest push --purge code.nephatrine.net/nephnet/gitea-runner:${manifestName}; done
       - name: Wait to Retry
         if: steps.manifest.outcome != 'success'
@@ -163,7 +163,7 @@ jobs:
       - name: Retry Docker Manifest
         if: steps.manifest.outcome != 'success'
         run: |
-          export IMAGELIST="--amend code.nephatrine.net/nephnet/gitea-runner:liteyuki-amd64 --amend code.nephatrine.net/nephnet/gitea-runner:liteyuki-ia32 --amend code.nephatrine.net/nephnet/gitea-runner:liteyuki-arm64 --amend code.nephatrine.net/nephnet/gitea-runner:liteyuki-arm32 --amend code.nephatrine.net/nephnet/gitea-runner:liteyuki-riscv64"
+          export IMAGELIST="--amend code.nephatrine.net/nephnet/gitea-runner:0.2.13-liteyuki-amd64 --amend code.nephatrine.net/nephnet/gitea-runner:0.2.13-liteyuki-ia32 --amend code.nephatrine.net/nephnet/gitea-runner:0.2.13-liteyuki-arm64 --amend code.nephatrine.net/nephnet/gitea-runner:0.2.13-liteyuki-arm32 --amend code.nephatrine.net/nephnet/gitea-runner:0.2.13-liteyuki-riscv64"
           for manifestName in 0.2.13-liteyuki liteyuki; do docker manifest rm code.nephatrine.net/nephnet/gitea-runner:${manifestName} || true; docker manifest create code.nephatrine.net/nephnet/gitea-runner:${manifestName} ${IMAGELIST}; docker manifest push --purge code.nephatrine.net/nephnet/gitea-runner:${manifestName}; done
       - name: Notify Discord
         uses: https://code.nephatrine.net/NephHub/actions-status-discord@v1
@@ -179,7 +179,7 @@ jobs:
       - name: DockerHub Login (Push)
         continue-on-error: true
         id: dhlogin
-        uses: https://code.nephatrine.net/NephHub/login-action@v3
+        uses: https://code.nephatrine.net/NephHub/login-action@v3.6.0
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}
@@ -188,7 +188,7 @@ jobs:
         run: sleep 60
       - name: Retry DockerHub Login (Push)
         if: steps.dhlogin.outcome != 'success'
-        uses: https://code.nephatrine.net/NephHub/login-action@v3
+        uses: https://code.nephatrine.net/NephHub/login-action@v3.6.0
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}

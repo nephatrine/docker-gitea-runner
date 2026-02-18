@@ -40,7 +40,7 @@ jobs:
       - name: NephCode Login (Push)
         continue-on-error: true
         id: nclogin
-        uses: https://code.nephatrine.net/NephHub/login-action@v3
+        uses: https://code.nephatrine.net/NephHub/login-action@v3.6.0
         with:
           registry: code.nephatrine.net
           username: ${{ gitea.actor }}
@@ -50,7 +50,7 @@ jobs:
         run: sleep 60
       - name: Retry NephCode Login (Push)
         if: steps.nclogin.outcome != 'success'
-        uses: https://code.nephatrine.net/NephHub/login-action@v3
+        uses: https://code.nephatrine.net/NephHub/login-action@v3.6.0
         with:
           registry: code.nephatrine.net
           username: ${{ gitea.actor }}
@@ -99,7 +99,7 @@ jobs:
       - name: DockerHub Login (Push)
         continue-on-error: true
         id: dhlogin
-        uses: https://code.nephatrine.net/NephHub/login-action@v3
+        uses: https://code.nephatrine.net/NephHub/login-action@v3.6.0
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}
@@ -108,7 +108,7 @@ jobs:
         run: sleep 60
       - name: Retry DockerHub Login (Push)
         if: steps.dhlogin.outcome != 'success'
-        uses: https://code.nephatrine.net/NephHub/login-action@v3
+        uses: https://code.nephatrine.net/NephHub/login-action@v3.6.0
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}
@@ -136,7 +136,7 @@ jobs:
       - name: NephCode Login (Push)
         continue-on-error: true
         id: nclogin
-        uses: https://code.nephatrine.net/NephHub/login-action@v3
+        uses: https://code.nephatrine.net/NephHub/login-action@v3.6.0
         with:
           registry: code.nephatrine.net
           username: ${{ gitea.actor }}
@@ -146,7 +146,7 @@ jobs:
         run: sleep 60
       - name: Retry NephCode Login (Push)
         if: steps.nclogin.outcome != 'success'
-        uses: https://code.nephatrine.net/NephHub/login-action@v3
+        uses: https://code.nephatrine.net/NephHub/login-action@v3.6.0
         with:
           registry: code.nephatrine.net
           username: ${{ gitea.actor }}
@@ -179,7 +179,7 @@ jobs:
       - name: DockerHub Login (Push)
         continue-on-error: true
         id: dhlogin
-        uses: https://code.nephatrine.net/NephHub/login-action@v3
+        uses: https://code.nephatrine.net/NephHub/login-action@v3.6.0
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}
@@ -188,7 +188,7 @@ jobs:
         run: sleep 60
       - name: Retry DockerHub Login (Push)
         if: steps.dhlogin.outcome != 'success'
-        uses: https://code.nephatrine.net/NephHub/login-action@v3
+        uses: https://code.nephatrine.net/NephHub/login-action@v3.6.0
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASS }}

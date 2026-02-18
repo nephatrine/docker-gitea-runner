@@ -18,5 +18,7 @@ LABEL maintainer="Daniel Wolf <nephatrine@gmail.com>"
 
 RUN apk add --no-cache docker git git-lfs jq npm && rm -rf /tmp/* /var/tmp/*
 
+ENV DOCKER_API_VERSION=1.41
+
 COPY --from=builder /root/nephnet-runner/act_runner /usr/bin/
 COPY override /

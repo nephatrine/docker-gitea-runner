@@ -5,11 +5,12 @@ SPDX-License-Identifier: ISC
 
 # Gitea Actions Runner
 
-[![NephCode](https://img.shields.io/static/v1?label=Git&message=NephCode&color=teal)](https://code.nephatrine.net/NephNET/docker-gitea-act)
-[![GitHub](https://img.shields.io/static/v1?label=Git&message=GitHub&color=teal)](https://github.com/nephatrine/docker-gitea-act)
-[![Registry](https://img.shields.io/static/v1?label=OCI&message=NephCode&color=blue)](https://code.nephatrine.net/NephNET/-/packages/container/gitea-runner/latest)
-[![DockerHub](https://img.shields.io/static/v1?label=OCI&message=DockerHub&color=blue)](https://hub.docker.com/repository/docker/nephatrine/gitea-runner/general)
+[![Git: NephCode](https://img.shields.io/static/v1?label=Git&message=NephCode&color=teal)](https://code.nephatrine.net/NephNET/docker-gitea-act)
+[![Git: GitHub](https://img.shields.io/static/v1?label=Git&message=GitHub&color=teal)](https://github.com/nephatrine/docker-gitea-act)
+[![OCI: NephCode](https://img.shields.io/static/v1?label=OCI&message=NephCode&color=blue)](https://code.nephatrine.net/NephNET/-/packages/container/gitea-runner/latest)
+[![OCI: DockerHub](https://img.shields.io/static/v1?label=OCI&message=DockerHub&color=blue)](https://hub.docker.com/repository/docker/nephatrine/gitea-runner/general)
 [![unRAID](https://img.shields.io/static/v1?label=unRAID&message=template&color=orange)](https://code.nephatrine.net/NephNET/unraid-containers)
+[![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 
 This is an Alpine-based container hosting a Gitea Actions act_runner for
 performing your own CI/CD builds. You can have multiple such runners connected
@@ -73,6 +74,6 @@ services:
 
 ### docker run
 
-```bash
+```sh
 docker run --rm -ti code.nephatrine.net/nephnet/gitea-runner:latest /bin/bash
 ```

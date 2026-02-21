@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2023-2025 Daniel Wolf <nephatrine@gmail.com>
+# SPDX-FileCopyrightText: 2023-2026 Daniel Wolf <nephatrine@gmail.com>
 # SPDX-License-Identifier: ISC
 
 name: Build Container Image
@@ -34,7 +34,7 @@ jobs:
     continue-on-error: true
     steps:
       - name: Checkout Repository
-        uses: https://code.nephatrine.net/NephHub/checkout@v4
+        uses: https://code.nephatrine.net/NephHub/checkout@v5
       - name: BuildX Setup
         uses: https://code.nephatrine.net/NephHub/setup-buildx-action@v3
       - name: NephCode Login (Push)
@@ -218,7 +218,7 @@ jobs:
     continue-on-error: true
     steps:
       - name: Checkout Repository
-        uses: https://code.nephatrine.net/NephHub/checkout@v4
+        uses: https://code.nephatrine.net/NephHub/checkout@v5
       - name: Docker Describe
         continue-on-error: true
         uses: https://github.com/peter-evans/dockerhub-description@v3

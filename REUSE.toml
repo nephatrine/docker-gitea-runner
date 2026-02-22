@@ -1,27 +1,22 @@
 version = 1
-SPDX-PackageName = "docker-gitea-act"
+SPDX-PackageName = "docker-gitea-runner"
 SPDX-PackageSupplier = "Daniel Wolf <nephatrine@gmail.com>"
-SPDX-PackageDownloadLocation = "https://code.nephatrine.net/NephNET/docker-gitea-act"
+SPDX-PackageDownloadLocation = "https://code.nephatrine.net/NephNET/docker-gitea-runner"
 
 [[annotations]]
-path = [".vscode/*"]
-SPDX-FileCopyrightText = "Daniel Wolf <nephatrine@gmail.com>"
-SPDX-License-Identifier = "CC0-1.0"
-
-[[annotations]]
-path = "override/etc/s6-overlay/s6-rc.d/gitea-runner/dependencies.d/*"
-precedence = "aggregate"
-SPDX-FileCopyrightText = "NONE"
-SPDX-License-Identifier = "CC0-1.0"
-
-[[annotations]]
-path = "override/etc/s6-overlay/s6-rc.d/gitea-runner/type"
+path = "override/etc/s6-overlay/s6-rc.d/*/dependencies.d/*"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "NONE"
 SPDX-License-Identifier = "CC0-1.0"
 
 [[annotations]]
 path = "override/etc/s6-overlay/s6-rc.d/user/contents.d/*"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "NONE"
+SPDX-License-Identifier = "CC0-1.0"
+
+[[annotations]]
+path = "override/etc/s6-overlay/s6-rc.d/*/type"
 precedence = "aggregate"
 SPDX-FileCopyrightText = "NONE"
 SPDX-License-Identifier = "CC0-1.0"

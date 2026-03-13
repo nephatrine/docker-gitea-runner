@@ -73,6 +73,56 @@ jobs:
         with:
           title: "FAIL: build_images (liteyuki; ${{matrix.platform}})"
           webhook: ${{ secrets.DISCORD_WH_CONTAINERS }}
+  build_images_141:
+    needs: [build_images]
+    strategy:
+      matrix:
+        include:
+          - runner: riscv64
+            platform: riscv64
+            nephhub: riscv64
+    runs-on: nephnet-${{matrix.runner}}
+    continue-on-error: true
+    steps:
+      - name: Checkout Repository
+        uses: https://code.nephatrine.net/NephHub/checkout@v5
+      - name: BuildX Setup
+        uses: https://code.nephatrine.net/NephHub/setup-buildx-action@v3
+      - name: NephCode Login (Push)
+        continue-on-error: true
+        id: nclogin
+        uses: https://code.nephatrine.net/NephHub/login-action@v3
+        with:
+          registry: code.nephatrine.net
+          username: ${{ gitea.actor }}
+          password: ${{ secrets.PACKAGER_TOKEN }}
+      - name: Wait to Retry
+        if: steps.nclogin.outcome != 'success'
+        run: sleep 60
+      - name: Retry NephCode Login (Push)
+        if: steps.nclogin.outcome != 'success'
+        uses: https://code.nephatrine.net/NephHub/login-action@v3
+        with:
+          registry: code.nephatrine.net
+          username: ${{ gitea.actor }}
+          password: ${{ secrets.PACKAGER_TOKEN }}
+      - name: Build & Push
+        uses: https://code.nephatrine.net/NephHub/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/${{matrix.platform}}
+          provenance: false
+          pull: true
+          push: true
+          file: Dockerfile.liteyuki-141
+          tags: code.nephatrine.net/nephnet/gitea-runner:0.3.0-liteyuki-141-${{matrix.nephhub}}
+          cache-from: type=registry,ref=code.nephatrine.net/nephhub/${{matrix.nephhub}}-cache:liteyuki-runner
+      - name: Notify Discord
+        uses: https://code.nephatrine.net/NephHub/actions-status-discord@v1
+        if: failure()
+        with:
+          title: "FAIL: build_images (liteyuki-141; ${{matrix.platform}})"
+          webhook: ${{ secrets.DISCORD_WH_CONTAINERS }}
   push_images:
     needs: [build_images]
     strategy:

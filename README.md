@@ -21,8 +21,8 @@ container. Only allow trusted users and organizations access to your runner.**
 
 ## Supported Tags
 
-- `gitea-runner:0.3.0`: act_runner 0.3.0 (upstream)
-- `gitea-runner:liteyuki`: act_runner 0.3.0 w/ allowed_repos config from liteyuki-runner
+- `gitea-runner:0.3.1`: act_runner 0.3.1 (upstream)
+- `gitea-runner:liteyuki`: act_runner 0.3.1 w/ allowed_repos config from liteyuki-runner
 
 ## Software
 

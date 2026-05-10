@@ -6,7 +6,7 @@
 # hadolint ignore=DL3007
 FROM code.nephatrine.net/nephnet/nxb-golang:latest AS builder
 
-ARG ACT_RUNNER_VERSION=v0.4.1-ly
+ARG ACT_RUNNER_VERSION=v0.5.0-ly
 RUN git -C /root clone -b "$ACT_RUNNER_VERSION" --single-branch --depth=1 https://code.nephatrine.net/nephatrine/nephnet-runner.git
 WORKDIR /root/nephnet-runner
 

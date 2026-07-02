@@ -12,24 +12,25 @@ SPDX-License-Identifier: ISC
 [![unRAID](https://img.shields.io/static/v1?label=unRAID&message=template&color=orange)](https://code.nephatrine.net/nephatrine/unraid-containers)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 
-This is an Alpine-based container hosting a Gitea Actions act_runner for
-performing your own CI/CD builds. You can have multiple such runners connected
-to a Gitea server.
+This is an Alpine-based container hosting a Gitea Actions runner for performing
+your own CI/CD builds. You can have multiple such runners connected to a Gitea
+server.
 
 **WARNING: Please note that the runner itself runs as the root user inside the
 container. Only allow trusted users and organizations access to your runner.**
 
 ## Supported Tags
 
-- `gitea-runner:0.6.1`: act_runner 0.6.1 (upstream)
-- `gitea-runner:liteyuki`: act_runner 0.6.1 w/ allowed_repos config from liteyuki-runner
+- `gitea-runner:0.6.1`: gitea-runner 1.0.8 (upstream)
+- `gitea-runner:liteyuki`: gitea-runner 1.0.8 w/ allowed_repos config from
+  liteyuki-runner
 
 ## Software
 
 - [Alpine Linux](https://alpinelinux.org/)
 - [Skarnet S6](https://skarnet.org/software/s6/)
 - [s6-overlay](https://github.com/just-containers/s6-overlay)
-- [act_runner](https://gitea.com/gitea/act_runner)
+- [gitea-runner](https://gitea.com/gitea/runner)
 
 ## Configuration
 

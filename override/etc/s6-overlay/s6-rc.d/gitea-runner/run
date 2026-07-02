@@ -1,5 +1,5 @@
 #!/command/with-contenv /bin/sh
-# SPDX-FileCopyrightText: 2023-2025 Daniel Wolf <nephatrine@gmail.com>
+# SPDX-FileCopyrightText: 2023-2026 Daniel Wolf <nephatrine@gmail.com>
 # SPDX-License-Identifier: ISC
 
 # shellcheck shell=sh
@@ -15,7 +15,7 @@ if [ ! -d /mnt/config/etc ]; then
   /command/s6-setuidgid guardian /bin/mkdir -p /mnt/config/etc
 fi
 if [ -d /mnt/config/etc ]; then
-  /usr/bin/act_runner generate-config | /command/s6-setuidgid guardian /usr/bin/tee /mnt/config/etc/gitea-runner.yaml.default
+  /usr/bin/gitea-runner generate-config | /command/s6-setuidgid guardian /usr/bin/tee /mnt/config/etc/gitea-runner.yaml.default
 fi
 if [ ! -f /mnt/config/etc/gitea-runner.yaml ] && [ -f /mnt/config/etc/gitea-runner.yaml.default ]; then
   /command/s6-setuidgid guardian /bin/cp /mnt/config/etc/gitea-runner.yaml.default /mnt/config/etc/gitea-runner.yaml
@@ -37,7 +37,7 @@ fi
 
 if [ ! -f /mnt/config/log/gitea-runner/configured ]; then
   if [ -n "${GITEA_INSTANCE_URL}" ] && [ -n "${GITEA_RUNNER_REGISTRATION_TOKEN}" ]; then
-    /command/s6-setuidgid guardian /usr/bin/act_runner register --instance "${GITEA_INSTANCE_URL}" --token "${GITEA_RUNNER_REGISTRATION_TOKEN}" --name "${GITEA_RUNNER_NAME}" --labels "${GITEA_RUNNER_LABELS}" --config "/mnt/config/etc/gitea-runner.yaml" --no-interactive 2>&1 | /command/s6-setuidgid guardian /usr/bin/tee /mnt/config/log/register.log
+    /command/s6-setuidgid guardian /usr/bin/gitea-runner register --instance "${GITEA_INSTANCE_URL}" --token "${GITEA_RUNNER_REGISTRATION_TOKEN}" --name "${GITEA_RUNNER_NAME}" --config "/mnt/config/etc/gitea-runner.yaml" --no-interactive 2>&1 | /command/s6-setuidgid guardian /usr/bin/tee /mnt/config/log/register.log
     if /bin/grep -qi "registered successfully" /mnt/config/log/register.log; then
       /command/s6-setuidgid guardian sh -c "/bin/echo \"${REQSETTINGS}\" >/mnt/config/log/gitea-runner/configured"
     fi
@@ -45,9 +45,9 @@ if [ ! -f /mnt/config/log/gitea-runner/configured ]; then
 fi
 
 if [ -f /mnt/config/log/gitea-runner/configured ]; then
-  exec /usr/bin/act_runner daemon --config "/mnt/config/etc/gitea-runner.yaml"
+  exec /usr/bin/gitea-runner daemon --config "/mnt/config/etc/gitea-runner.yaml"
 elif [ -z "${GITEA_RUNNER_REGISTRATION_TOKEN}" ] && [ -e /mnt/config/home/.runner ]; then
-  exec /usr/bin/act_runner daemon --config "/mnt/config/etc/gitea-runner.yaml"
+  exec /usr/bin/gitea-runner daemon --config "/mnt/config/etc/gitea-runner.yaml"
 else
   /bin/echo "** runner is not registered **"
   if [ -f /mnt/config/log/register.log ]; then

@@ -12,47 +12,49 @@ export REQSETTINGS="${GITEA_INSTANCE_URL};${GITEA_RUNNER_REGISTRATION_TOKEN};${G
 cd /mnt/config/home || exit 1
 
 if [ ! -d /mnt/config/etc ]; then
-  /command/s6-setuidgid guardian /bin/mkdir -p /mnt/config/etc
+	/command/s6-setuidgid guardian /bin/mkdir -p /mnt/config/etc
 fi
 if [ -d /mnt/config/etc ]; then
-  /usr/bin/gitea-runner generate-config | /command/s6-setuidgid guardian /usr/bin/tee /mnt/config/etc/gitea-runner.yaml.default
+	/usr/bin/gitea-runner generate-config | /command/s6-setuidgid guardian /usr/bin/tee /mnt/config/etc/gitea-runner.yaml.default
 fi
 if [ ! -f /mnt/config/etc/gitea-runner.yaml ] && [ -f /mnt/config/etc/gitea-runner.yaml.default ]; then
-  /command/s6-setuidgid guardian /bin/cp /mnt/config/etc/gitea-runner.yaml.default /mnt/config/etc/gitea-runner.yaml
+	/command/s6-setuidgid guardian /bin/cp /mnt/config/etc/gitea-runner.yaml.default /mnt/config/etc/gitea-runner.yaml
 fi
 
 if [ ! -d /mnt/config/log/gitea-runner ]; then
-  /command/s6-setuidgid guardian /bin/mkdir -p /mnt/config/log/gitea-runner
+	/command/s6-setuidgid guardian /bin/mkdir -p /mnt/config/log/gitea-runner
 fi
 if [ -d /mnt/config/log/gitea-runner ]; then
-  /command/s6-setuidgid guardian /bin/sh -c "/bin/echo \"${REQSETTINGS}\" >/mnt/config/log/gitea-runner/requested"
+	/command/s6-setuidgid guardian /bin/sh -c "echo \"${REQSETTINGS}\" >/mnt/config/log/gitea-runner/requested"
 fi
 
 if [ -f /mnt/config/log/gitea-runner/configured ]; then
-  CURSETTINGS=$(/usr/bin/head -1 /mnt/config/log/gitea-runner/configured)
-  if [ ! "$REQSETTINGS" = "$CURSETTINGS" ]; then
-    /bin/rm -f /mnt/config/log/gitea-runner/configured
-  fi  
+	CURSETTINGS=$(/usr/bin/head -1 /mnt/config/log/gitea-runner/configured)
+	if [ ! "$REQSETTINGS" = "$CURSETTINGS" ]; then
+		/bin/rm -f /mnt/config/log/gitea-runner/configured
+	fi
 fi
 
 if [ ! -f /mnt/config/log/gitea-runner/configured ]; then
-  if [ -n "${GITEA_INSTANCE_URL}" ] && [ -n "${GITEA_RUNNER_REGISTRATION_TOKEN}" ]; then
-    /command/s6-setuidgid guardian /usr/bin/gitea-runner register --instance "${GITEA_INSTANCE_URL}" --token "${GITEA_RUNNER_REGISTRATION_TOKEN}" --name "${GITEA_RUNNER_NAME}" --config "/mnt/config/etc/gitea-runner.yaml" --no-interactive 2>&1 | /command/s6-setuidgid guardian /usr/bin/tee /mnt/config/log/register.log
-    if /bin/grep -qi "registered successfully" /mnt/config/log/register.log; then
-      /command/s6-setuidgid guardian sh -c "/bin/echo \"${REQSETTINGS}\" >/mnt/config/log/gitea-runner/configured"
-    fi
-  fi
+	if [ -n "${GITEA_INSTANCE_URL}" ] && [ -n "${GITEA_RUNNER_REGISTRATION_TOKEN}" ]; then
+		/command/s6-setuidgid guardian /usr/bin/gitea-runner register --instance "${GITEA_INSTANCE_URL}" --token "${GITEA_RUNNER_REGISTRATION_TOKEN}" --name "${GITEA_RUNNER_NAME}" --config "/mnt/config/etc/gitea-runner.yaml" --no-interactive 2>&1 | /command/s6-setuidgid guardian /usr/bin/tee /mnt/config/log/register.log
+		if /bin/grep -qi "registered successfully" /mnt/config/log/register.log; then
+			/command/s6-setuidgid guardian /bin/sh -c "echo \"${REQSETTINGS}\" >/mnt/config/log/gitea-runner/configured"
+		fi
+	fi
 fi
 
 if [ -f /mnt/config/log/gitea-runner/configured ]; then
-  exec /usr/bin/gitea-runner daemon --config "/mnt/config/etc/gitea-runner.yaml"
+	exec /usr/bin/gitea-runner daemon --config "/mnt/config/etc/gitea-runner.yaml"
 elif [ -z "${GITEA_RUNNER_REGISTRATION_TOKEN}" ] && [ -e /mnt/config/home/.runner ]; then
-  exec /usr/bin/gitea-runner daemon --config "/mnt/config/etc/gitea-runner.yaml"
+	exec /usr/bin/gitea-runner daemon --config "/mnt/config/etc/gitea-runner.yaml"
 else
-  /bin/echo "** runner is not registered **"
-  if [ -f /mnt/config/log/register.log ]; then
-    /bin/cat /mnt/config/log/register.log
-  fi
-  /bin/sleep 300
-  exit 0
+	echo "** runner is not registered **"
+	if [ -f /mnt/config/log/register.log ]; then
+		/bin/cat /mnt/config/log/register.log
+	fi
+	/bin/sleep 300
+	exit 1
 fi
+
+# vim:ft=sh
